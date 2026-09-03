@@ -3,4 +3,4 @@ Multinomial Naive Bayes,1.0,1.0,1.0,1.0,1.0
 Logistic Regression,1.0,1.0,1.0,1.0,1.0
 Linear SVC (Calibrated),1.0,1.0,1.0,1.0,1.0
 LightGBM Classifier,1.0,1.0,1.0,1.0,1.0
-Random Forest,0.98,0.9864,0.9783,0.9817,0.98
+Random Forest,0.9886,0.9923,0.9856,0.9886,0.9885

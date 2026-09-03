@@ -2,4 +2,4 @@ Model,Accuracy,Macro Precision,Macro Recall,Macro F1,Weighted F1
 Logistic Regression,1.0,1.0,1.0,1.0,1.0
 Linear SVC (Calibrated),1.0,1.0,1.0,1.0,1.0
 LightGBM Classifier,1.0,1.0,1.0,1.0,1.0
-Random Forest,0.9771,0.9841,0.9715,0.9773,0.9772
+Random Forest,0.9857,0.9898,0.982,0.9857,0.9857

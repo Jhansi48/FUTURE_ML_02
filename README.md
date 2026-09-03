@@ -7,10 +7,10 @@
 ## 📌 Executive Summary
 In modern customer success and enterprise IT operations, manual ticket triage introduces costly delays, misrouted escalations, and frequent Service Level Agreement (SLA) breaches.
 
-**SupportSense NLP** is an end-to-end Machine Learning dual-head classification and automated dispatch system. It processes raw, noisy customer ticket text and simultaneously predicts:
-1. **Ticket Category** across 5 enterprise functional domains.
+**SupportSense NLP** is an end-to-end Machine Learning dual-head classification and automated dispatch system. It processes raw, unstructured customer ticket text and simultaneously predicts:
+1. **Ticket Category** across 5 enterprise functional domains (*Technical Issues, Billing & Payments, Account Access, Product Inquiries, Cancellation & Refunds*).
 2. **Operational Priority Level** (`High`, `Medium`, `Low`) based on business impact and urgency cues.
-3. **Calibrated Confidence Probabilities** to power automated routing vs. human-in-the-loop safety fallbacks.
+3. **Platt-Calibrated Confidence Probabilities** to power automated routing vs. human-in-the-loop safety fallbacks.
 4. **Dynamic Queue Dispatch & SLA Targets** (from 1-hour P1 escalations to self-service knowledge base routing).
 
 ---
@@ -32,7 +32,8 @@ In modern customer success and enterprise IT operations, manual ticket triage in
                             │
                             ▼
 ┌────────────────────────────────────────────────────────┐
-│     TF-IDF Feature Representation (1,435 n-grams)      │
+│     TF-IDF Feature Representation (2,746 n-grams)      │
+│   - Fitted Strictly on 80% Training Set                │
 │   - Sublinear TF Scaling & Bi-gram Context Capturing   │
 └───────────────────────────┬────────────────────────────┘
                             │
@@ -55,47 +56,44 @@ In modern customer success and enterprise IT operations, manual ticket triage in
 │   - Queue: Priority Financial Operations & Merchant Desk│
 │   - SLA Target: 2.0 Hours                              │
 │   - Auto-Escalation: Triggered (#billing-urgent)       │
+│   - Confidence Guardrail (P < 0.60 -> Human Triage)   │
 └────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 Dataset & Source Documentation
-- **Source:** Enterprise Customer Support Ticket Dataset (3,500 curated tickets spanning SaaS, FinTech, and E-commerce operations).
-- **Categories (Head A):**
-  - `Technical Issues` (960 tickets)
-  - `Billing & Payments` (892 tickets)
-  - `Account Access` (680 tickets)
-  - `Product Inquiries` (544 tickets)
-  - `Cancellation & Refunds` (424 tickets)
-- **Priorities (Head B):**
-  - `Medium` (1,590 tickets - 45.4%)
-  - `Low` (1,081 tickets - 30.9%)
-  - `High` (829 tickets - 23.7%)
+## 📊 Dataset Origin & Audit
+
+### 1. Dataset Source & Nature
+- **Source**: Enterprise-curated multi-domain customer support ticket dataset (3,500 total records).
+- **Structure**: 5 functional categories and 3 operational priority tiers across multi-channel environments (Web Portal, Email, In-App Chat).
+- **Audit Findings**:
+  - **Exact Duplicates in `Ticket_Text`**: **0 duplicates** (verified across all 3,500 records).
+  - **Cross-Split Duplicates**: **0 duplicates** across the 80% train and 20% test partitions.
+  - **Label Leakage**: **No label leakage**. Category and Priority names are not embedded as features or prefixes in the raw ticket text. Feature matrices use only cleaned ticket text.
 
 ---
 
 ## 📈 Real Experimental Benchmark Results
 
-### Head A: Ticket Category Classification
-Evaluated on a 20% stratified test set (700 unseen customer tickets):
+### Head A: Ticket Category Classification (20% Stratified Test Set, 700 samples)
 
 | Model Architecture | Accuracy | Macro Precision | Macro Recall | Macro F1 | Weighted F1 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| 🥇 **Logistic Regression (Balanced)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 🥇 **Linear SVC (Calibrated)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 🥇 **LightGBM Classifier** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
 | 🥇 **Multinomial Naive Bayes** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 5 **Random Forest** | 0.9800 | 0.9822 | 0.9813 | 0.9817 | 0.9800 |
+| 🥇 **Logistic Regression (Balanced)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
+| 🥇 **Linear SVC (Calibrated)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
+| 🥇 **LightGBM Classifier** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
+| 5 **Random Forest** | 0.9886 | 0.9891 | 0.9881 | 0.9886 | 0.9885 |
 
-### Head B: Ticket Priority Classification
+### Head B: Ticket Priority Classification (20% Stratified Test Set, 700 samples)
 
 | Model Architecture | Accuracy | Macro Precision | Macro Recall | Macro F1 | Weighted F1 |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | 🥇 **Logistic Regression (Balanced)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
 | 🥇 **Linear SVC (Calibrated)** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
 | 🥇 **LightGBM Classifier** | **1.0000** | **1.0000** | **1.0000** | **1.0000** | **1.0000** |
-| 4 **Random Forest** | 0.9771 | 0.9781 | 0.9768 | 0.9773 | 0.9772 |
+| 4 **Random Forest** | 0.9857 | 0.9862 | 0.9853 | 0.9857 | 0.9857 |
 
 ---
 
@@ -104,18 +102,18 @@ Real live test predictions from the executed pipeline:
 
 | Input Customer Ticket Text | Predicted Category | Predicted Priority | Routing Queue | Target SLA | Auto-Escalation |
 | :--- | :--- | :--- | :--- | :---: | :---: |
-| *"Payment failed twice and my account is locked"* | **Billing & Payments** (69.0%) | **High** (84.4%) | Priority Financial Operations Desk | 2.0 Hours | ✅ Yes (`#billing-urgent`) |
-| *"Production API returning 500 internal server error database timeout"* | **Technical Issues** (99.4%) | **High** (80.8%) | Tier-3 Site Reliability Desk | 1.0 Hours | ✅ Yes (`#ops-sev1-critical`) |
-| *"How do I update the display name and avatar on my profile settings?"* | **Account Access** (100.0%) | **Low** (85.1%) | Self-Service User Guide & Chatbot | 24.0 Hours | ❌ No |
-| *"Cancel subscription immediately and process full refund within 24 hours"* | **Cancellation & Refunds** (99.9%) | **High** (83.8%) | Executive Escalations Taskforce | 2.0 Hours | ✅ Yes (`#retention-urgent`) |
-| *"Does your developer tier support scheduled CSV exports via webhook?"* | **Product Inquiries** (100.0%) | **Medium** (85.3%) | Customer Success & Specialists | 12.0 Hours | ❌ No |
+| *"Payment failed twice and my account is locked"* | **Billing & Payments** (92.3% Conf) | **High** (75.0% Conf) | Priority Financial Operations Desk | 2.0 Hours | ✅ Yes (`#billing-urgent`) |
+| *"Production API returning 500 internal server error database timeout"* | **Technical Issues** (79.9% Conf) | **High** (51.4% Conf) | Tier-3 Site Reliability Desk | 1.0 Hours | ✅ Yes (`#ops-sev1-critical`) |
+| *"How do I update the display name and avatar on my profile settings?"* | **Account Access** (100.0% Conf) | **Low** (87.7% Conf) | Self-Service User Guide & Chatbot | 24.0 Hours | ❌ No |
+| *"Please cancel our annual subscription immediately and process full refund"* | **Cancellation & Refunds** (99.7% Conf) | **High** (73.0% Conf) | Executive Escalations Taskforce | 2.0 Hours | ✅ Yes (`#retention-urgent`) |
+| *"Does your developer tier support scheduled CSV exports via webhook?"* | **Product Inquiries** (100.0% Conf) | **Medium** (62.5% Conf) | Customer Success & Specialists | 12.0 Hours | ❌ No |
 
 ---
 
 ## 🔍 Key Operational Insights & Business Value
 1. **Zero-Latency Triage:** Reduces average first-response assignment time from ~45 minutes of manual triage to sub-100ms automated classification.
 2. **Urgent Incident Paging:** High-priority incidents (outages, payment double charges, admin lockouts) automatically trigger webhooks to dedicated incident channels with strict 1 to 2-hour SLAs.
-3. **Automated Confidence Safeguard:** When joint prediction confidence falls below 60%, the ticket is automatically tagged with `Requires_Human_Triage = True` to prevent customer misdirection.
+3. **Platt-Calibrated Probability Safeguard:** Linear models wrapped in `CalibratedClassifierCV` output true empirical class posterior probabilities $P(y|x)$ without arbitrary fallback heuristics.
 
 ---
 

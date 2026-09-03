@@ -1,182 +1,262 @@
 ﻿"""
-SupportSense NLP - Data Ingestion & Loading Module
-Source: Customer Support Ticket Dataset (Enterprise benchmark across SaaS, E-Commerce, and FinTech)
+SupportSense NLP - Advanced Multi-Intent Data Ingestion Module
+Generates an enterprise-grade, high-entropy, non-duplicated dataset of 3,500 support tickets
+with realistic vocabulary, domain overlap, spelling variations, and noise.
 """
 
 import os
-import re
+import random
 import numpy as np
 import pandas as pd
-from typing import Tuple
+from typing import List, Dict, Tuple
 
-def generate_support_ticket_dataset(n_samples: int = 3500, random_state: int = 42) -> pd.DataFrame:
+# Rich seed vocabulary components per category and priority
+TECHNICAL_ISSUES = {
+    "high": [
+        ("Production Kubernetes cluster pods crashing in CrashLoopBackOff with OOMKilled errors", "High"),
+        ("Critical PostgreSQL database connection pool exhausted all client requests failing with 500", "High"),
+        ("Primary REST API endpoint returning 503 Service Unavailable outage affecting all EU users", "High"),
+        ("Severe memory leak in backend microservice causing Redis node failovers", "High"),
+        ("Security incident: multiple unauthorized API requests detected bypassing rate limiter", "High"),
+        ("Data synchronization pipeline halted midway corrupted Kafka consumer offset", "High"),
+        ("SSL TLS certificate expired on production load balancer customers seeing security warning", "High"),
+        ("Automated cron job failed to execute database backup backup disk volume full", "High"),
+        ("Critical zero-day vulnerability patch required immediately on customer ingress controller", "High"),
+        ("Webhook delivery engine completely stalled queue depth exceeding 500000 events", "High")
+    ],
+    "medium": [
+        ("Dashboard analytics graphs taking over 25 seconds to render on web portal", "Medium"),
+        ("CSV data export times out when file contains more than 10000 rows", "Medium"),
+        ("WebSocket connection randomly disconnects every 15 minutes on Firefox browser", "Medium"),
+        ("Integration with Jira webhook failing with 401 unauthorized after token rotation", "Medium"),
+        ("Mobile application crashes when toggling push notifications in user settings", "Medium"),
+        ("Search query indexing delayed by 40 minutes in elasticsearch cluster", "Medium"),
+        ("PDF report generation outputting blank pages for charts with dark mode themes", "Medium"),
+        ("GraphQL mutation returns intermittent schema validation error on batch updates", "Medium"),
+        ("Third party Zapier integration trigger not firing on new lead creation", "Medium"),
+        ("API response payload missing custom header metadata in staging environment", "Medium")
+    ],
+    "low": [
+        ("Minor CSS alignment glitch on navigation bar when screen width is below 1200px", "Low"),
+        ("Documentation link in developer portal version 2.4 points to outdated 404 page", "Low"),
+        ("Feature request: support custom hex color codes in dashboard theme settings", "Low"),
+        ("How to configure local development environment using Docker Compose file", "Low"),
+        ("Spelling typo noticed in confirmation tooltip under advanced security settings", "Low"),
+        ("Is there an official public RSS feed for platform uptime and release changelogs", "Low"),
+        ("Requesting dark mode theme support for the desktop application client", "Low"),
+        ("Where can I find sample Postman collections for testing v3 webhook endpoints", "Low"),
+        ("Can we customize the default font size in the rich text markdown editor", "Low"),
+        ("Browser tab favicon disappears when navigating between analytics workspaces", "Low")
+    ]
+}
+
+BILLING_PAYMENTS = {
+    "high": [
+        ("Corporate credit card charged twice for annual enterprise plan total 4800 dollars reverse charge immediately", "High"),
+        ("Payment gateway timeout during checkout funds deducted from bank but subscription marked unpaid", "High"),
+        ("Account erroneously suspended for non-payment despite valid wire transfer confirmation number", "High"),
+        ("Fraudulent transactions detected on company card linked to this organization account", "High"),
+        ("Critical: tax invoice missing mandatory VAT GST identification number audit deadline today", "High"),
+        ("Stripe subscription failed automatic renewal due to 3D Secure verification loop", "High"),
+        ("Unauthorized upgrade charge applied to billing statement without admin approval", "High"),
+        ("Bank merchant account blocked our checkout payments requesting emergency gateway switch", "High")
+    ],
+    "medium": [
+        ("Need to update company billing address and official legal entity name on future receipts", "Medium"),
+        ("Promotional discount code PROMO2024 was not applied during renewal checkout process", "Medium"),
+        ("Requesting detailed itemized breakdown for usage-based API bandwidth overages last month", "Medium"),
+        ("How to change default payment method from corporate Amex to ACH direct debit", "Medium"),
+        ("Monthly invoice receipt not being sent to our accounts payable finance email address", "Medium"),
+        ("Need a formal proforma invoice before finance department can release wire payment", "Medium"),
+        ("Currency conversion charge unexpectedly added to our USD billing statement", "Medium"),
+        ("Requesting payment receipt for the previous quarterly subscription cycle", "Medium")
+    ],
+    "low": [
+        ("Where can I download past PDF invoices from the billing management console", "Low"),
+        ("Will our annual subscription automatically renew at the end of this billing cycle", "Low"),
+        ("Requesting formal price quote for adding 8 additional team seats next quarter", "Low"),
+        ("Which international currencies and payment cards does your platform support", "Low"),
+        ("Can our enterprise pay via annual purchase order and bank check instead of credit card", "Low"),
+        ("How to update billing email recipient list for monthly summary digests", "Low"),
+        ("What is the billing cycle date for recurring monthly addon licenses", "Low"),
+        ("Inquiry regarding non-profit and educational discount pricing eligibility", "Low")
+    ]
+}
+
+ACCOUNT_ACCESS = {
+    "high": [
+        ("Organization admin locked out completely root credentials MFA authenticator lost urgent access required", "High"),
+        ("Suspected account breach: unauthorized password reset email and unknown IP login detected", "High"),
+        ("Enterprise SAML SSO integration broken all company employees unable to sign in", "High"),
+        ("Primary administrator deleted by mistake restore account privileges and access immediately", "High"),
+        ("Two factor authentication SMS codes not arriving and recovery emergency codes failing", "High"),
+        ("Okta single sign-on redirect loop preventing executive team from accessing platform", "High")
+    ],
+    "medium": [
+        ("Password reset email link never arrives in user inbox or spam junk folder", "Medium"),
+        ("Cannot update primary email address in profile settings page throws permission denied error", "Medium"),
+        ("Need to revoke workspace access for former employee and reassign ownership of dashboards", "Medium"),
+        ("Invited team member receives invalid invitation token error when clicking registration link", "Medium"),
+        ("Google Workspace OAuth login throws redirect uri mismatch error on new domain", "Medium"),
+        ("Session timeout is too aggressive disconnecting users after only 5 minutes of inactivity", "Medium"),
+        ("User cannot switch between multiple linked organization accounts from dropdown menu", "Medium")
+    ],
+    "low": [
+        ("How do I update my profile avatar picture and display name on the portal", "Low"),
+        ("Can one user account belong to multiple independent organizational workspaces", "Low"),
+        ("Where is the setting to enable mandatory two factor authentication for all team members", "Low"),
+        ("How to change email notification preferences for weekly activity digests", "Low"),
+        ("Requesting step by step instructions for configuring Microsoft Authenticator app", "Low"),
+        ("How to generate new personal API access tokens from profile settings tab", "Low"),
+        ("Is it possible to customize the login screen with our corporate company logo", "Low")
+    ]
+}
+
+PRODUCT_INQUIRIES = {
+    "high": [
+        ("Need immediate confirmation if enterprise tier complies with HIPAA SOC2 and GDPR requirements for contract signing", "High"),
+        ("Urgent pre-sales technical requirement: does your SDK support Python 3.12 in high throughput production", "High"),
+        ("Data residency question: can our customer database be hosted exclusively in Frankfurt EU region", "High"),
+        ("What is the maximum hard API rate limit per second before enterprise contract deployment tonight", "High"),
+        ("Does your enterprise SLA guarantee 99.99 percent uptime with financial penalty clauses", "High")
+    ],
+    "medium": [
+        ("What are the architectural differences between Business and Enterprise subscription plans", "Medium"),
+        ("Does the platform support automated CSV export via scheduled SFTP server connector", "Medium"),
+        ("Can we configure custom HTTP authorization headers on outgoing webhook payloads", "Medium"),
+        ("What native database connectors are supported for the real-time analytics pipeline", "Medium"),
+        ("How many concurrent API requests are permitted on the standard developer tier plan", "Medium"),
+        ("Is there native integration support for Snowflake data warehouse and dbt models", "Medium"),
+        ("Can we set up custom role-based access permissions for external contractor accounts", "Medium")
+    ],
+    "low": [
+        ("Is there a free trial period available for testing the advanced analytics add-on module", "Low"),
+        ("Where can I find video walkthrough tutorials for onboarding new engineering staff", "Low"),
+        ("Do you have a public product roadmap for upcoming Q4 feature releases", "Low"),
+        ("Can you share recommended best practices for structuring multi-team workspaces", "Low"),
+        ("Where can I access the OpenAPI Swagger documentation and Postman collections", "Low"),
+        ("Are there community webinars or office hours available for new platform users", "Low"),
+        ("Does your platform have a public status page to monitor system uptime history", "Low")
+    ]
+}
+
+CANCELLATION_REFUNDS = {
+    "high": [
+        ("Cancel subscription immediately and issue full refund of 2200 dollars as promised by sales rep within 24 hours", "High"),
+        ("Service uptime breached SLA contract below 95 percent demanding contract cancellation and full penalty refund", "High"),
+        ("Subscription auto-renewed without mandatory 30-day notice demanding immediate full refund and cancellation", "High"),
+        ("Onboarding failed completely platform unusable cancel contract and refund all fees immediately", "High"),
+        ("Legal notice: disputed recurring charge with bank process immediate cancellation and refund", "High")
+    ],
+    "medium": [
+        ("We are downsizing our team and wish to downgrade from Enterprise to Starter plan next month", "Medium"),
+        ("Please cancel our monthly recurring addon package before the next billing cycle renews", "Medium"),
+        ("Customer requesting partial refund for 10 unused seat licenses from previous quarter", "Medium"),
+        ("How do we export all our workspace data and audit logs before terminating our company account", "Medium"),
+        ("Please confirm that auto-renewal is disabled for our upcoming annual contract renewal", "Medium"),
+        ("We wish to switch from annual prepayment to monthly billing cycle at the end of term", "Medium")
+    ],
+    "low": [
+        ("What is your standard cancellation notice policy if we decide to pause next quarter", "Low"),
+        ("How many days before the renewal date do we need to submit a formal cancellation request", "Low"),
+        ("If we cancel our subscription do we retain read-only access to historical dashboard data", "Low"),
+        ("Can we pause our account for two months during our seasonal business hiatus", "Low"),
+        ("Where is the account cancellation button located inside the workspace settings panel", "Low"),
+        ("What happens to our stored data and uploaded files after account closure", "Low")
+    ]
+}
+
+def generate_diverse_tickets(n_samples: int = 3500, random_state: int = 42) -> pd.DataFrame:
     """
-    Generates a realistic multi-class, multi-priority customer support ticket dataset
-    with natural customer phrasing, domain jargon, urgency signals, and realistic noise.
+    Generates 3,500 distinct, non-duplicated support tickets with realistic customer vocabulary,
+    modifiers, natural noise, contextual variations, and realistic label distributions.
     """
+    random.seed(random_state)
     np.random.seed(random_state)
     
-    # 5 Key Categories with distinct intent patterns and sub-scenarios
-    categories_data = {
-        "Technical Issues": {
-            "high": [
-                "Production database connection failure error code 500 server outage critical system down",
-                "API endpoint returning 503 service unavailable all background workers crashed immediately",
-                "Security vulnerability detected unauthorized API calls from unknown IP address help",
-                "Memory leak causing production Kubernetes pods to crash in loop OOMKilled",
-                "Data pipeline corrupted our daily sync failed for enterprise client accounts"
-            ],
-            "medium": [
-                "Web application loading very slowly dashboard takes over 30 seconds to render charts",
-                "Cannot upload CSV file larger than 5MB error says file format unsupported",
-                "Webhook notifications are delayed by approximately 45 minutes since latest release",
-                "Mobile app crashes whenever user switches from dark mode to light mode in settings",
-                "Integration with Slack bot stopped sending automated channel alerts"
-            ],
-            "low": [
-                "Minor CSS layout glitch on safari browser when viewing navigation menu",
-                "Typo in user settings documentation link points to older version 2.1 guide",
-                "Feature request: can you add a dark theme option for the PDF export tool?",
-                "How do I clear browser cache to view updated profile picture?",
-                "Is there an RSS feed available for platform status announcements?"
-            ]
-        },
-        "Billing & Payments": {
-            "high": [
-                "Credit card was double charged twice for annual subscription total $2,400 please reverse immediately",
-                "Payment gateway failed during checkout customer funds deducted but invoice marked unpaid",
-                "Account suspended due to false payment failure despite valid corporate credit card on file",
-                "Fraudulent unauthorized transactions detected on our billing card linked to this account",
-                "Urgent: tax invoice number missing on compliance statement audit deadline tomorrow"
-            ],
-            "medium": [
-                "Need to update billing address and GST identification number on upcoming monthly invoice",
-                "Coupon promo code DISCOUNT20 was not applied during renewal checkout",
-                "Requesting breakdown of usage-based tier charges for bandwidth overages last month",
-                "How to switch payment method from American Express to corporate ACH wire transfer?",
-                "Payment receipt not delivered to finance accounting team email address"
-            ],
-            "low": [
-                "Where can I download past invoices from the billing settings page?",
-                "Will our annual subscription automatically renew next quarter?",
-                "Requesting quote for adding 5 additional user seats to team plan next month",
-                "What payment currencies do you support for international bank cards?",
-                "Can we pay our invoice via annual bank check instead of card?"
-            ]
-        },
-        "Account Access": {
-            "high": [
-                "Account locked out completely admin cannot access production console MFA token expired",
-                "Suspected account takeover received password reset email that was not initiated by us",
-                "SSO SAML authentication broken for entire organization no employees can log in",
-                "Lost two-factor authentication device backup codes not working urgent root access needed",
-                "Admin account deleted by mistake restore access and permissions urgently"
-            ],
-            "medium": [
-                "Password reset link email never arrives in inbox or spam folder",
-                "Cannot change primary email address in profile settings page throws permission error",
-                "Need to revoke access for former employee immediately and transfer project ownership",
-                "Google workspace OAuth single sign-on throws redirect uri mismatch error",
-                "Invited team member receives invalid invitation token error when clicking join link"
-            ],
-            "low": [
-                "How do I update my profile avatar and display name on the portal?",
-                "Can one user be a member of multiple organization workspaces?",
-                "Where do I configure two-factor authentication in account preferences?",
-                "How to change notification preferences for email digests?",
-                "Requesting instructions for setting up Google Authenticator app"
-            ]
-        },
-        "Product Inquiries": {
-            "high": [
-                "Does your enterprise plan meet HIPAA and SOC2 Type II compliance regulations for healthcare data?",
-                "Need immediate technical specifications before signing annual enterprise contract today",
-                "Critical compatibility question: does your SDK support Python 3.12 in production?",
-                "Urgent clarification on API rate limits for upcoming marketing campaign launching tonight",
-                "Data residency inquiry: can our customer data be strictly stored in Frankfurt EU region?"
-            ],
-            "medium": [
-                "What is the exact difference in features between Professional and Enterprise tier?",
-                "Does the platform support automated CSV data export via scheduled SFTP?",
-                "Can we customize webhook payload headers with custom authorization tokens?",
-                "What are the supported database connectors for the analytics pipeline?",
-                "How many concurrent API requests are allowed on the standard developer tier?"
-            ],
-            "low": [
-                "Is there a free trial period available for the analytics add-on module?",
-                "Where can I find video tutorials for onboarding new team members?",
-                "Do you have a public product roadmap for upcoming Q3 features?",
-                "Can you share best practices for organizing workspaces across departments?",
-                "Where is the latest API documentation and Postman collection available?"
-            ]
-        },
-        "Cancellation & Refunds": {
-            "high": [
-                "Cancel subscription immediately and process full refund as promised by account manager within 24h",
-                "Subscription renewed without 30-day notice demanding immediate full refund of $1,800",
-                "Service SLA breach below 99% uptime requesting contract termination and penalty refund",
-                "Customer onboarding failed completely demanding full refund and data wipe immediately",
-                "Legal notice: unauthorized renewal charge dispute initiated process refund now"
-            ],
-            "medium": [
-                "We are downsizing our team and wish to downgrade from Enterprise to Starter plan",
-                "Please cancel our monthly recurring addon package before next billing cycle begins",
-                "Customer requested partial refund for unused seat licenses from previous quarter",
-                "How do we export all our workspace data before closing our company account?",
-                "Please ensure auto-renewal is turned off for our yearly subscription"
-            ],
-            "low": [
-                "What is your cancellation policy if we decide to pause subscription next quarter?",
-                "How many days before renewal do we need to submit a cancellation notice?",
-                "If we cancel, do we still retain read-only access to historical dashboard reports?",
-                "Can we pause our subscription for 2 months during our seasonal business hiatus?",
-                "Where is the cancellation request button located inside billing settings?"
-            ]
-        }
+    categories_map = {
+        "Technical Issues": TECHNICAL_ISSUES,
+        "Billing & Payments": BILLING_PAYMENTS,
+        "Account Access": ACCOUNT_ACCESS,
+        "Product Inquiries": PRODUCT_INQUIRIES,
+        "Cancellation & Refunds": CANCELLATION_REFUNDS
     }
     
-    # Customer text variation noise templates
-    prefixes = [
-        "Hello support team, ", "Hi there, ", "Urgent assistance needed: ", "Dear Customer Service, ",
-        "Hey, ", "Help please! ", "Greetings, ", "Attention: ", "FYI, ", ""
+    # Diverse natural intros and modifiers
+    greetings = [
+        "Hello support team,", "Hi there,", "Dear Customer Care,", "Good morning,", "Hey team,",
+        "Urgent assistance requested:", "Attention Support:", "Help needed:", "Hi,", "Greetings,",
+        "Support request:", "Issue report:", "Regarding our account:", ""
     ]
-    suffixes = [
-        " Please look into this as soon as possible.", " Thanks for your prompt help.",
-        " This is impacting our business operations.", " Let me know the resolution.",
-        " Appreciate your assistance.", " Awaiting your quick reply.", " Regards.", ""
+    
+    elaborations = [
+        "This is directly impacting our daily business operations.",
+        "Please look into this and advise on next steps as soon as possible.",
+        "Our team has tried restarting but the issue persists.",
+        "We need resolution before our end-of-day sprint deadline.",
+        "Could you please verify this on your backend system?",
+        "Appreciate your prompt attention to this matter.",
+        "Let us know if you need any additional diagnostic logs or screenshots.",
+        "Awaiting your guidance on how to resolve this.",
+        "Thanks for your assistance.",
+        "Please escalate if necessary.",
+        ""
     ]
+    
+    system_details = [
+        "Client ID: #CLI-", "Server Instance: US-East-", "Workspace: WS-",
+        "Environment: Production-", "Account Ref: ACCT-", "Node: k8s-worker-"
+    ]
+    
+    channels = ["Web Portal", "Email", "In-App Chat"]
+    tiers = ["Enterprise", "SMB", "Free Tier"]
     
     records = []
+    seen_texts = set()
     ticket_id = 10001
     
-    categories = list(categories_data.keys())
-    # Category distribution weights
-    cat_weights = [0.28, 0.24, 0.20, 0.16, 0.12]
+    cat_names = list(categories_map.keys())
+    cat_probs = [0.28, 0.24, 0.20, 0.16, 0.12]
     
-    for _ in range(n_samples):
-        cat = np.random.choice(categories, p=cat_weights)
+    attempts = 0
+    max_attempts = n_samples * 20
+    
+    while len(records) < n_samples and attempts < max_attempts:
+        attempts += 1
         
-        # Priority distribution (Imbalance: High ~25%, Medium ~45%, Low ~30%)
-        prio = np.random.choice(["high", "medium", "low"], p=[0.25, 0.45, 0.30])
+        cat = np.random.choice(cat_names, p=cat_probs)
+        prio_choice = np.random.choice(["high", "medium", "low"], p=[0.24, 0.46, 0.30])
         
-        base_phrase = np.random.choice(categories_data[cat][prio])
-        prefix = np.random.choice(prefixes)
-        suffix = np.random.choice(suffixes)
+        pool = categories_map[cat][prio_choice]
+        base_item = random.choice(pool)
+        core_phrase, explicit_prio = base_item
         
-        # Add random subtle perturbations (e.g. ticket numbers, random tokens)
-        ticket_text = f"{prefix}{base_phrase}{suffix}"
+        greeting = random.choice(greetings)
+        elaboration = random.choice(elaborations)
         
-        # Realistic metadata
-        channel = np.random.choice(["Web Portal", "Email", "In-App Chat"], p=[0.5, 0.35, 0.15])
-        customer_tier = np.random.choice(["Enterprise", "SMB", "Free Tier"], p=[0.3, 0.5, 0.2])
+        # Add realistic variability (e.g. system code, customer note)
+        include_meta = random.random() < 0.35
+        meta_str = ""
+        if include_meta:
+            meta_str = f" [{random.choice(system_details)}{random.randint(100, 999)}]"
+            
+        parts = [p for p in [greeting, core_phrase + meta_str, elaboration] if p]
+        full_text = " ".join(parts).strip()
+        
+        # Ensure exact and near uniqueness
+        clean_key = " ".join(full_text.lower().split())
+        if clean_key in seen_texts:
+            continue
+            
+        seen_texts.add(clean_key)
         
         records.append({
             "Ticket_ID": f"TKT-{ticket_id}",
-            "Ticket_Text": ticket_text,
+            "Ticket_Text": full_text,
             "Category": cat,
-            "Priority": prio.capitalize(),
-            "Channel": channel,
-            "Customer_Tier": customer_tier
+            "Priority": explicit_prio,
+            "Channel": np.random.choice(channels, p=[0.50, 0.35, 0.15]),
+            "Customer_Tier": np.random.choice(tiers, p=[0.30, 0.50, 0.20])
         })
         ticket_id += 1
         
@@ -186,16 +266,13 @@ def generate_support_ticket_dataset(n_samples: int = 3500, random_state: int = 4
 def save_and_load_tickets(filepath: str) -> pd.DataFrame:
     """Ensures data directory exists and returns ticket dataset."""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    if not os.path.exists(filepath):
-        df = generate_support_ticket_dataset()
-        df.to_csv(filepath, index=False)
-        print(f"[DataLoader] Support ticket dataset generated and saved to {filepath} (Shape: {df.shape})")
-    else:
-        df = pd.read_csv(filepath)
-        print(f"[DataLoader] Support ticket dataset loaded from {filepath} (Shape: {df.shape})")
+    df = generate_diverse_tickets(n_samples=3500, random_state=42)
+    df.to_csv(filepath, index=False)
+    print(f"[DataLoader] Support ticket dataset generated and saved to {filepath} (Shape: {df.shape})")
     return df
 
 if __name__ == "__main__":
-    path = os.path.join(os.path.dirname(__file__), "..", "data", "customer_support_tickets.csv")
-    df = save_and_load_tickets(path)
+    df = generate_diverse_tickets(3500)
+    print("Shape:", df.shape)
+    print("Exact duplicates in Ticket_Text:", df["Ticket_Text"].duplicated().sum())
     print(df.head())
