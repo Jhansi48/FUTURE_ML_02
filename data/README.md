@@ -1,17 +1,19 @@
-﻿# Dataset Documentation: Customer Support Ticket Dataset
+﻿# SupportSense NLP — Customer Support Ticket Dataset Specification
 
-## Source & Description
-This dataset captures 3,500 multi-channel customer support tickets representing real-world inquiries across SaaS, E-commerce, and FinTech domains.
+## Overview
+This directory contains the customer support ticket dataset utilized by **SupportSense NLP** for dual-head classification (Ticket Category and Operational Priority Tagging).
 
-## Attributes:
-- `Ticket_ID`: Unique ticket identifier (`TKT-10001` to `TKT-13500`)
-- `Ticket_Text`: Raw unstructured customer submission
-- `Category`: Target 1 (5 classes: `Technical Issues`, `Billing & Payments`, `Account Access`, `Product Inquiries`, `Cancellation & Refunds`)
-- `Priority`: Target 2 (3 classes: `High`, `Medium`, `Low`)
-- `Channel`: Submission channel (`Web Portal`, `Email`, `In-App Chat`)
-- `Customer_Tier`: Organization plan (`Enterprise`, `SMB`, `Free Tier`)
+## Dataset Schema
+| Column Name | Data Type | Description |
+| :--- | :--- | :--- |
+| `Ticket_ID` | String | Unique identifier for each support ticket (`TKT-10001` to `TKT-13500`). |
+| `Ticket_Text` | String | Raw customer ticket content including issue description, urgency signals, and context. |
+| `Category` | Categorical | Target classification label (5 classes: `Technical Issues`, `Billing & Payments`, `Account Access`, `Product Inquiries`, `Cancellation & Refunds`). |
+| `Priority` | Categorical | Operational priority tier (3 classes: `High`, `Medium`, `Low`). |
+| `Channel` | Categorical | Originating support channel (`Web Portal`, `Email`, `In-App Chat`). |
+| `Customer_Tier` | Categorical | Customer account tier (`Enterprise`, `SMB`, `Free Tier`). |
 
-## Preprocessing Guidelines:
-1. Normalize text and expand English contractions.
-2. Remove punctuation and generic conversation stop words while preserving technical error tokens (`500`, `503`, `mfa`, `sso`, `sql`).
-3. Apply stratified splitting to preserve joint class distributions.
+## Provenance & Integrity
+- **Total Records:** 3,500 samples
+- **Duplicates:** 0 exact duplicates and 0 cross-split duplicates
+- **Isolation:** Target fields (`Category`, `Priority`) are strictly isolated from feature inputs.
