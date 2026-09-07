@@ -47,20 +47,20 @@ st.markdown("""
 
     /* Global Canvas */
     .stApp {
-        background-color: #F1F3EE !important;
+        background-color: #F8F7F3 !important;
         color: #1F2933 !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #E5EAE3 !important;
+        background-color: #EBF0EA !important;
         border-right: 1px solid #D5DDD6 !important;
     }
 
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
+        padding-top: 1.2rem !important;
+        padding-bottom: 1.2rem !important;
     }
     
     section[data-testid="stSidebar"] h1,
@@ -439,10 +439,9 @@ st.markdown("""
     </div>
     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <span class="badge-teal">NLP CLASSIFICATION</span>
-        <span class="badge-teal">DUAL-HEAD MODEL</span>
-        <span class="badge-teal">CALIBRATED CONFIDENCE</span>
-        <span class="badge-neutral">70 / 15 / 15 VALIDATION</span>
-        <span class="badge-neutral">ZERO TEST LEAKAGE</span>
+        <span class="badge-teal">DUAL-HEAD ARCHITECTURE</span>
+        <span class="badge-teal">PROBABILITY ESTIMATION</span>
+        <span class="badge-neutral">70 / 15 / 15 EVALUATION</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -467,7 +466,7 @@ st.markdown("""
     <div class="workflow-arrow">→</div>
     <div class="workflow-step">
         <span class="workflow-step-num">Step 4</span>
-        <span class="workflow-step-name">Platt Confidence</span>
+        <span class="workflow-step-name">Confidence Scoring</span>
     </div>
     <div class="workflow-arrow">→</div>
     <div class="workflow-step">
@@ -524,8 +523,8 @@ st.sidebar.markdown(f"""
   `{cat_champion_name}`
 - **Priority Champion:**  
   `{prio_champion_name}`
-- **Calibration:**  
-  `Platt Scaling`
+- **Probability Engine:**  
+  `Posterior / Logit Estimator`
 """)
 
 # Set Default Text Based on Selection
@@ -597,7 +596,7 @@ if user_ticket.strip():
                 <div class="metric-card-value" style="color: #075E5B;">{cat_pred}</div>
             </div>
             <div class="metric-card-sub" style="color: #087F7B;">
-                Category Conf: <strong>{cat_conf * 100:.1f}%</strong> (Calibrated)
+                Category Conf: <strong>{cat_conf * 100:.1f}%</strong>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -620,7 +619,7 @@ if user_ticket.strip():
                 <div class="metric-card-value" style="margin-top: 4px;">{prio_badge}</div>
             </div>
             <div class="metric-card-sub" style="color: {prio_color};">
-                Priority Conf: <strong>{prio_conf * 100:.1f}%</strong> (Calibrated)
+                Priority Conf: <strong>{prio_conf * 100:.1f}%</strong>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -689,8 +688,8 @@ if user_ticket.strip():
         else:
             status_box_html = (
                 '<div style="background-color: #EAF3ED; border: 1px solid #BFDEC7; border-radius: 8px; padding: 12px 14px; color: #5B8C72; font-size: 0.88rem; font-weight: 600;">'
-                '✓ <strong>AUTOMATED DISPATCH APPROVED</strong><br>'
-                '<span style="font-size: 0.82rem; font-weight: 500; color: #1F2933;">Confidence exceeds safety guardrails. Automatic routing active.</span>'
+                '✓ <strong>DISPATCH RECOMMENDED</strong><br>'
+                '<span style="font-size: 0.82rem; font-weight: 500; color: #1F2933;">Confidence meets the configured routing threshold.</span>'
                 '</div>'
             )
         st.markdown(f"""
