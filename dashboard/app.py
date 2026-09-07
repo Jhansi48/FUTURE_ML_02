@@ -48,14 +48,34 @@ st.markdown("""
     
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] h4 {
         color: #1F2933 !important;
     }
 
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] span,
-    section[data-testid="stSidebar"] label {
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] li {
         color: #5B6770 !important;
+    }
+
+    section[data-testid="stSidebar"] strong,
+    section[data-testid="stSidebar"] b {
+        color: #1F2933 !important;
+    }
+
+    section[data-testid="stSidebar"] label p {
+        color: #1F2933 !important;
+        font-weight: 600 !important;
+    }
+
+    section[data-testid="stSidebar"] code {
+        background-color: #FFFFFF !important;
+        color: #075E5B !important;
+        border: 1px solid #E3E5E2 !important;
+        padding: 2px 5px !important;
+        border-radius: 4px !important;
     }
 
     /* Structured Section Cards */
@@ -341,8 +361,7 @@ else:
     default_text = sample_tickets[preset_choice]
 
 # Section 1: Incoming Ticket Workspace
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
-st.markdown('<div class="content-box-title">Incoming Ticket Triage Workspace</div>', unsafe_allow_html=True)
+st.markdown("### Incoming Ticket Triage Workspace")
 
 user_ticket = st.text_area(
     "Customer Ticket Text / Inbound Message Body:",
@@ -358,8 +377,6 @@ with col_stats:
     word_count = len(user_ticket.split()) if user_ticket else 0
     char_count = len(user_ticket) if user_ticket else 0
     st.markdown(f"<div style='padding-top: 8px; color: #5B6770; font-size: 0.86rem;'>Word Count: <strong style='color: #1F2933;'>{word_count}</strong> | Character Count: <strong style='color: #1F2933;'>{char_count}</strong></div>", unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Run Inference
 if user_ticket.strip():
@@ -454,32 +471,38 @@ if user_ticket.strip():
         """, unsafe_allow_html=True)
 
     # Section 3: Routing & SLA Decision Card
-    st.markdown('<div class="content-box" style="margin-top: 10px;">', unsafe_allow_html=True)
-    st.markdown('<div class="content-box-title">Automated Dispatch & Queue Directive</div>', unsafe_allow_html=True)
+    st.markdown("### Automated Dispatch & Queue Directive")
     
     r_col1, r_col2 = st.columns([3, 2])
     
     with r_col1:
-        st.markdown(f"<div style='margin-bottom: 6px;'><strong style='color: #1F2933;'>Assigned Operational Queue:</strong> <code style='background:#F2EFE9; color:#1F2933; border:1px solid #E3E5E2; padding:2px 6px; border-radius:4px;'>{routing['Assigned_Queue']}</code></div>", unsafe_allow_html=True)
-        st.markdown(f"<div style='margin-bottom: 6px;'><strong style='color: #1F2933;'>Dispatch Channel / Pager Webhook:</strong> <span class='badge-channel'>{routing['Channel']}</span></div>", unsafe_allow_html=True)
-        st.markdown(f"<div><strong style='color: #1F2933;'>Operational Policy Rationale:</strong> <span style='color: #5B6770;'>{routing['Routing_Rationale']}</span></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="content-box" style="margin-bottom: 0;">
+            <div style='margin-bottom: 8px;'><strong style='color: #1F2933;'>Assigned Operational Queue:</strong> <code style='background:#F2EFE9; color:#1F2933; border:1px solid #E3E5E2; padding:2px 6px; border-radius:4px;'>{routing['Assigned_Queue']}</code></div>
+            <div style='margin-bottom: 8px;'><strong style='color: #1F2933;'>Dispatch Channel / Pager Webhook:</strong> <span class='badge-channel'>{routing['Channel']}</span></div>
+            <div><strong style='color: #1F2933;'>Operational Policy Rationale:</strong> <span style='color: #5B6770;'>{routing['Routing_Rationale']}</span></div>
+        </div>
+        """, unsafe_allow_html=True)
         
     with r_col2:
-        st.markdown(f"<div><strong style='color: #1F2933;'>Joint Model Confidence Score:</strong> <strong style='color:#087F7B;'>{joint_conf * 100:.1f}%</strong></div>", unsafe_allow_html=True)
         if routing.get("Requires_Human_Triage", False) or joint_conf < 0.70:
-            st.markdown("""
+            advisory_box = """
             <div style="background-color: #FFF4D8; border: 1px solid #F7DE98; border-radius: 6px; padding: 10px 14px; color: #D99A24; font-size: 0.86rem; font-weight: 600; margin-top: 8px;">
                 ⚠️ Human Verification Advisory: Confidence score is below the 70% threshold. Ticket flagged for supervisor review.
             </div>
-            """, unsafe_allow_html=True)
+            """
         else:
-            st.markdown("""
+            advisory_box = """
             <div style="background-color: #EAF3ED; border: 1px solid #BFDEC7; border-radius: 6px; padding: 10px 14px; color: #5B8C72; font-size: 0.86rem; font-weight: 600; margin-top: 8px;">
                 ✓ Automated Dispatch Approved: Confidence exceeds safety guardrails. Automatic routing active.
             </div>
-            """, unsafe_allow_html=True)
-            
-    st.markdown('</div>', unsafe_allow_html=True)
+            """
+        st.markdown(f"""
+        <div class="content-box" style="margin-bottom: 0;">
+            <div><strong style='color: #1F2933;'>Joint Model Confidence Score:</strong> <strong style='color:#087F7B;'>{joint_conf * 100:.1f}%</strong></div>
+            {advisory_box}
+        </div>
+        """, unsafe_allow_html=True)
 
     # Section 4: Probability Analysis
     st.markdown("### Calibrated Probability Distributions")
@@ -514,7 +537,7 @@ if user_ticket.strip():
             orientation="h",
             marker=dict(
                 color=["#087F7B" if c == cat_pred else "#C2E5E2" for c in cat_df["Category"]],
-                line=dict(color="#075E5B" if c == cat_pred else "#E3E5E2", width=1)
+                line=dict(color=["#075E5B" if c == cat_pred else "#E3E5E2" for c in cat_df["Category"]], width=1)
             ),
             text=[f"{p * 100:.1f}%" for p in cat_df["Probability"]],
             textposition="outside",
