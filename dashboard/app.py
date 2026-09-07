@@ -337,6 +337,7 @@ st.markdown("""
         border: none !important;
         border-radius: 8px !important;
         padding: 10px 24px !important;
+        white-space: nowrap !important;
         transition: background-color 0.15s ease-in-out !important;
     }
     
@@ -546,7 +547,7 @@ user_ticket = st.text_area(
     help="Enter customer email, chat transcript, or portal issue description."
 )
 
-col_btn, col_stats = st.columns([1, 4])
+col_btn, col_stats = st.columns([1.8, 3.2])
 with col_btn:
     submit_btn = st.button("Classify & Recommend Routing", type="primary", use_container_width=True)
 with col_stats:
