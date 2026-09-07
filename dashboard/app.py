@@ -25,35 +25,66 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom Light Enterprise Analytics Styling
+# Custom Enterprise Analytics Styling (Exact Palette Specification)
+# Palette:
+# Background: #F8F7F3 | Cards: #FFFFFF | Primary Brand: #087F7B | Primary Dark: #075E5B
+# Main Text: #1F2933 | Secondary Text: #5B6770 | High/Urgent: #D95D39 | Medium: #D99A24
+# Low/Success: #5B8C72 | Borders: #E3E5E2 | Light Teal: #E7F4F2 | Light Urgent: #FBEAE5
+# Light Medium: #FFF4D8 | Light Success: #EAF3ED
 st.markdown("""
 <style>
-    /* Global Container and Typography */
+    /* Global App Canvas */
     .stApp {
-        background-color: #fbfaf7;
-        color: #1e293b;
+        background-color: #F8F7F3 !important;
+        color: #1F2933 !important;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
     /* Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background-color: #f5f3ec !important;
-        border-right: 1px solid #e7e3da;
+        background-color: #F2EFE9 !important;
+        border-right: 1px solid #E3E5E2 !important;
     }
     
-    section[data-testid="stSidebar"] .stMarkdown h1,
-    section[data-testid="stSidebar"] .stMarkdown h2,
-    section[data-testid="stSidebar"] .stMarkdown h3 {
-        color: #0f172a;
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #1F2933 !important;
     }
 
-    /* Clean Card Containers */
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] label {
+        color: #5B6770 !important;
+    }
+
+    /* Structured Section Cards */
+    .content-box {
+        background: #FFFFFF;
+        border: 1px solid #E3E5E2;
+        border-radius: 8px;
+        padding: 22px 24px;
+        box-shadow: 0 1px 3px rgba(31, 41, 51, 0.04), 0 1px 2px rgba(31, 41, 51, 0.02);
+        margin-bottom: 20px;
+    }
+    
+    .content-box-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1F2933;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #E3E5E2;
+        padding-bottom: 8px;
+        letter-spacing: -0.01em;
+    }
+
+    /* KPI Metric Cards */
     .metric-card {
-        background: #ffffff;
-        border: 1px solid #e5e1d8;
+        background: #FFFFFF;
+        border: 1px solid #E3E5E2;
         border-radius: 8px;
         padding: 16px 18px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 1px 3px rgba(31, 41, 51, 0.04), 0 1px 2px rgba(31, 41, 51, 0.02);
         margin-bottom: 12px;
         height: 100%;
         display: flex;
@@ -63,129 +94,126 @@ st.markdown("""
     
     .metric-card-label {
         font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #64748b;
+        color: #5B6770;
         margin-bottom: 6px;
     }
     
     .metric-card-value {
-        font-size: 1.22rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #0f172a;
+        color: #1F2933;
         line-height: 1.3;
         word-break: break-word;
         white-space: normal;
     }
     
     .metric-card-sub {
-        font-size: 0.82rem;
-        font-weight: 500;
+        font-size: 0.84rem;
+        font-weight: 600;
         margin-top: 6px;
-    }
-
-    /* Structured Section Cards */
-    .content-box {
-        background: #ffffff;
-        border: 1px solid #e5e1d8;
-        border-radius: 8px;
-        padding: 20px 22px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-        margin-bottom: 20px;
-    }
-    
-    .content-box-title {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 12px;
-        border-bottom: 1px solid #f1eee7;
-        padding-bottom: 8px;
     }
 
     /* Status Badges */
     .badge-urgent {
-        background-color: #fef2f2;
-        color: #b91c1c;
-        border: 1px solid #fecaca;
-        padding: 3px 8px;
+        background-color: #FBEAE5;
+        color: #D95D39;
+        border: 1px solid #F4C7BA;
+        padding: 3px 9px;
         border-radius: 4px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.8rem;
+        display: inline-block;
     }
     
     .badge-medium {
-        background-color: #fffbeb;
-        color: #b45309;
-        border: 1px solid #fde68a;
-        padding: 3px 8px;
+        background-color: #FFF4D8;
+        color: #D99A24;
+        border: 1px solid #F7DE98;
+        padding: 3px 9px;
         border-radius: 4px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.8rem;
+        display: inline-block;
     }
     
-    .badge-low {
-        background-color: #f0fdf4;
-        color: #15803d;
-        border: 1px solid #bbf7d0;
-        padding: 3px 8px;
+    .badge-success {
+        background-color: #EAF3ED;
+        color: #5B8C72;
+        border: 1px solid #BFDEC7;
+        padding: 3px 9px;
         border-radius: 4px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 0.8rem;
+        display: inline-block;
     }
     
-    .badge-tag {
-        background-color: #f8fafc;
-        color: #334155;
-        border: 1px solid #e2e8f0;
-        padding: 3px 8px;
+    .badge-teal {
+        background-color: #E7F4F2;
+        color: #075E5B;
+        border: 1px solid #B8E2DC;
+        padding: 3px 9px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        display: inline-block;
+    }
+
+    .badge-neutral {
+        background-color: #F2EFE9;
+        color: #1F2933;
+        border: 1px solid #E3E5E2;
+        padding: 3px 9px;
         border-radius: 4px;
         font-weight: 600;
         font-size: 0.8rem;
+        display: inline-block;
     }
     
     .badge-channel {
-        background-color: #f1f5f9;
-        color: #0f172a;
-        border: 1px solid #cbd5e1;
+        background-color: #F2EFE9;
+        color: #1F2933;
+        border: 1px solid #E3E5E2;
         padding: 2px 7px;
         border-radius: 4px;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 0.82rem;
         font-weight: 600;
+        display: inline-block;
     }
 
-    /* Custom Input and Form Styling */
+    /* Textarea & Input Controls */
     .stTextArea textarea {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
-        border: 1px solid #cbd5e1 !important;
+        background-color: #FFFFFF !important;
+        color: #1F2933 !important;
+        border: 1px solid #E3E5E2 !important;
         border-radius: 6px !important;
         font-size: 0.95rem !important;
     }
     
     .stTextArea textarea:focus {
-        border-color: #0f766e !important;
-        box-shadow: 0 0 0 1px #0f766e !important;
+        border-color: #087F7B !important;
+        box-shadow: 0 0 0 1px #087F7B !important;
     }
     
-    /* Selectbox readable text */
+    /* Selectbox Input Controls */
     div[data-baseweb="select"] {
-        background-color: #ffffff !important;
+        background-color: #FFFFFF !important;
         border-radius: 6px !important;
     }
     
     div[data-baseweb="select"] * {
-        color: #0f172a !important;
-        background-color: #ffffff !important;
+        color: #1F2933 !important;
+        background-color: #FFFFFF !important;
     }
     
-    /* Primary Action Button */
+    /* Primary Brand Button */
     .stButton button[kind="primary"] {
-        background-color: #0f766e !important;
-        color: #ffffff !important;
-        font-weight: 600 !important;
+        background-color: #087F7B !important;
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
         border: none !important;
         border-radius: 6px !important;
         padding: 8px 24px !important;
@@ -193,12 +221,30 @@ st.markdown("""
     }
     
     .stButton button[kind="primary"]:hover {
-        background-color: #115e59 !important;
+        background-color: #075E5B !important;
     }
     
-    /* Dataframes */
+    /* Tabs & DataFrames */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        border-bottom: 1px solid #E3E5E2;
+    }
+
+    .stTabs [data-baseweb="tab"] {
+        color: #5B6770 !important;
+        font-weight: 600;
+        padding: 8px 16px;
+    }
+
+    .stTabs [aria-selected="true"] {
+        color: #087F7B !important;
+        border-bottom: 2px solid #087F7B !important;
+        font-weight: 700 !important;
+    }
+
     .stDataFrame {
-        background-color: #ffffff !important;
+        background-color: #FFFFFF !important;
+        border: 1px solid #E3E5E2;
         border-radius: 6px;
     }
 </style>
@@ -222,18 +268,18 @@ pipeline_data = load_pipeline()
 
 # Header Section
 st.markdown("""
-<div style="margin-bottom: 20px;">
-    <h1 style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.02em;">
+<div style="margin-bottom: 22px;">
+    <h1 style="font-size: 1.95rem; font-weight: 800; color: #1F2933; margin-bottom: 4px; letter-spacing: -0.02em;">
         SupportSense NLP
     </h1>
-    <div style="font-size: 1.0rem; color: #475569; font-weight: 500; margin-bottom: 12px;">
+    <div style="font-size: 1.02rem; color: #5B6770; font-weight: 500; margin-bottom: 12px;">
         Enterprise Customer Support Ticket Triage & Dynamic SLA Routing Engine
     </div>
     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <span class="badge-tag">Dual-Head NLP Architecture</span>
-        <span class="badge-tag">TF-IDF + Platt Calibration</span>
-        <span class="badge-tag">70% Train / 15% Val / 15% Test Split</span>
-        <span class="badge-tag">Zero Test Leakage</span>
+        <span class="badge-teal">Dual-Head NLP Architecture</span>
+        <span class="badge-neutral">TF-IDF + Platt Calibration</span>
+        <span class="badge-neutral">70% Train / 15% Val / 15% Test Split</span>
+        <span class="badge-success">Zero Test Leakage Verified</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -249,7 +295,7 @@ cat_champion_name = pipeline_data.get("category_model_name", "Multinomial Naive 
 prio_champion_name = pipeline_data.get("priority_model_name", "Logistic Regression")
 
 # Sidebar Configuration
-st.sidebar.markdown("### 📋 Preset Test Scenarios")
+st.sidebar.markdown("### Preset Test Scenarios")
 st.sidebar.markdown("Select a real-world enterprise support scenario to test model triage, calibrated confidence scoring, and routing directives.")
 
 sample_tickets = {
@@ -269,19 +315,19 @@ preset_choice = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### ⚙️ Engine Specifications")
+st.sidebar.markdown("### Engine Specifications")
 st.sidebar.markdown(f"""
 - **Category Champion:** `{cat_champion_name}`
 - **Priority Champion:** `{prio_champion_name}`
 - **Vector Space:** 2,631 n-grams (1, 2)
 - **Calibration:** Platt Scaling (`CalibratedClassifierCV`)
-- **Escalation Threshold:** Joint Confidence < 70%
+- **Escalation Policy:** Joint Confidence < 70%
 """)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("""
-<div style="font-size: 0.78rem; color: #64748b; line-height: 1.4;">
-    <strong>Submission Details:</strong><br>
+<div style="font-size: 0.80rem; color: #5B6770; line-height: 1.45;">
+    <strong style="color: #1F2933;">Submission Metadata:</strong><br>
     Internship ID: <code>FIT/AUG26/ML10465</code><br>
     Track: Machine Learning (Task 2)<br>
     Repository: <code>FUTURE_ML_02</code>
@@ -296,7 +342,7 @@ else:
 
 # Section 1: Incoming Ticket Workspace
 st.markdown('<div class="content-box">', unsafe_allow_html=True)
-st.markdown('<div class="content-box-title">📥 Incoming Ticket Triage Workspace</div>', unsafe_allow_html=True)
+st.markdown('<div class="content-box-title">Incoming Ticket Triage Workspace</div>', unsafe_allow_html=True)
 
 user_ticket = st.text_area(
     "Customer Ticket Text / Inbound Message Body:",
@@ -311,7 +357,7 @@ with col_btn:
 with col_stats:
     word_count = len(user_ticket.split()) if user_ticket else 0
     char_count = len(user_ticket) if user_ticket else 0
-    st.markdown(f"<div style='padding-top: 8px; color: #64748b; font-size: 0.85rem;'>Word Count: <strong>{word_count}</strong> | Character Count: <strong>{char_count}</strong></div>", unsafe_allow_html=True)
+    st.markdown(f"<div style='padding-top: 8px; color: #5B6770; font-size: 0.86rem;'>Word Count: <strong style='color: #1F2933;'>{word_count}</strong> | Character Count: <strong style='color: #1F2933;'>{char_count}</strong></div>", unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -333,7 +379,7 @@ if user_ticket.strip():
     routing = route_ticket(cat_pred, prio_pred, cat_conf, prio_conf)
     
     # Section 2: Triage & Classification KPI Overview
-    st.markdown("### 🎯 Classification & Operational KPI Summary")
+    st.markdown("### Classification & Operational KPI Summary")
     
     kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
     
@@ -344,7 +390,7 @@ if user_ticket.strip():
                 <div class="metric-card-label">Predicted Category</div>
                 <div class="metric-card-value">{cat_pred}</div>
             </div>
-            <div class="metric-card-sub" style="color: #0369a1;">
+            <div class="metric-card-sub" style="color: #087F7B;">
                 Confidence: <strong>{cat_conf * 100:.1f}%</strong> (Calibrated)
             </div>
         </div>
@@ -353,13 +399,13 @@ if user_ticket.strip():
     with kpi_col2:
         if prio_pred == "High":
             prio_badge = '<span class="badge-urgent">HIGH PRIORITY</span>'
-            prio_sub_color = "#b91c1c"
+            prio_sub_color = "#D95D39"
         elif prio_pred == "Medium":
             prio_badge = '<span class="badge-medium">MEDIUM PRIORITY</span>'
-            prio_sub_color = "#b45309"
+            prio_sub_color = "#D99A24"
         else:
-            prio_badge = '<span class="badge-low">LOW PRIORITY</span>'
-            prio_sub_color = "#15803d"
+            prio_badge = '<span class="badge-success">LOW PRIORITY</span>'
+            prio_sub_color = "#5B8C72"
             
         st.markdown(f"""
         <div class="metric-card">
@@ -375,21 +421,25 @@ if user_ticket.strip():
         
     with kpi_col3:
         sla_hours = routing["SLA_Target_Hours"]
+        sla_is_p1 = (sla_hours <= 2.0)
+        sla_color = "#D95D39" if sla_is_p1 else "#5B8C72"
+        sla_status_text = "Critical P1 Window" if sla_is_p1 else "Standard Window"
+        
         st.markdown(f"""
         <div class="metric-card">
             <div>
                 <div class="metric-card-label">SLA Target Deadline</div>
                 <div class="metric-card-value">{sla_hours:.1f} Hours</div>
             </div>
-            <div class="metric-card-sub" style="color: {'#b91c1c' if sla_hours <= 2.0 else '#15803d'};">
-                Status: <strong>{'Critical P1 Window' if sla_hours <= 2.0 else 'Standard Window'}</strong>
+            <div class="metric-card-sub" style="color: {sla_color};">
+                Status: <strong>{sla_status_text}</strong>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
     with kpi_col4:
         is_escalated = routing["Auto_Escalation_Triggered"]
-        esc_badge = '<span class="badge-urgent">ESCALATED (P1/P2)</span>' if is_escalated else '<span class="badge-low">STANDARD DISPATCH</span>'
+        esc_badge = '<span class="badge-urgent">ESCALATED (P1/P2)</span>' if is_escalated else '<span class="badge-success">STANDARD DISPATCH</span>'
         
         st.markdown(f"""
         <div class="metric-card">
@@ -397,7 +447,7 @@ if user_ticket.strip():
                 <div class="metric-card-label">Escalation Status</div>
                 <div class="metric-card-value" style="margin-top: 4px;">{esc_badge}</div>
             </div>
-            <div class="metric-card-sub" style="color: #475569;">
+            <div class="metric-card-sub" style="color: #5B6770;">
                 Target: <span class="badge-channel">{routing['Channel']}</span>
             </div>
         </div>
@@ -405,51 +455,52 @@ if user_ticket.strip():
 
     # Section 3: Routing & SLA Decision Card
     st.markdown('<div class="content-box" style="margin-top: 10px;">', unsafe_allow_html=True)
-    st.markdown('<div class="content-box-title">🧭 Automated Dispatch & Queue Directive</div>', unsafe_allow_html=True)
+    st.markdown('<div class="content-box-title">Automated Dispatch & Queue Directive</div>', unsafe_allow_html=True)
     
     r_col1, r_col2 = st.columns([3, 2])
     
     with r_col1:
-        st.markdown(f"**Assigned Operational Queue:** `{routing['Assigned_Queue']}`")
-        st.markdown(f"**Dispatch Channel / Pager Webhook:** `{routing['Channel']}`")
-        st.markdown(f"**Operational Policy Rationale:** {routing['Routing_Rationale']}")
+        st.markdown(f"<div style='margin-bottom: 6px;'><strong style='color: #1F2933;'>Assigned Operational Queue:</strong> <code style='background:#F2EFE9; color:#1F2933; border:1px solid #E3E5E2; padding:2px 6px; border-radius:4px;'>{routing['Assigned_Queue']}</code></div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='margin-bottom: 6px;'><strong style='color: #1F2933;'>Dispatch Channel / Pager Webhook:</strong> <span class='badge-channel'>{routing['Channel']}</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<div><strong style='color: #1F2933;'>Operational Policy Rationale:</strong> <span style='color: #5B6770;'>{routing['Routing_Rationale']}</span></div>", unsafe_allow_html=True)
         
     with r_col2:
-        st.markdown(f"**Joint Model Confidence Score:** `{joint_conf * 100:.1f}%`")
+        st.markdown(f"<div><strong style='color: #1F2933;'>Joint Model Confidence Score:</strong> <strong style='color:#087F7B;'>{joint_conf * 100:.1f}%</strong></div>", unsafe_allow_html=True)
         if routing.get("Requires_Human_Triage", False) or joint_conf < 0.70:
             st.markdown("""
-            <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; color: #92400e; font-size: 0.85rem;">
-                ⚠️ <strong>Human Verification Advisory:</strong> Confidence score is near/below the safety threshold. Ticket has been flagged for supervisor review.
+            <div style="background-color: #FFF4D8; border: 1px solid #F7DE98; border-radius: 6px; padding: 10px 14px; color: #D99A24; font-size: 0.86rem; font-weight: 600; margin-top: 8px;">
+                ⚠️ Human Verification Advisory: Confidence score is below the 70% threshold. Ticket flagged for supervisor review.
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-            <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px 14px; color: #166534; font-size: 0.85rem;">
-                ✓ <strong>Automated Dispatch Approved:</strong> Confidence exceeds safety guardrails. Ticket automatically routed to queue.
+            <div style="background-color: #EAF3ED; border: 1px solid #BFDEC7; border-radius: 6px; padding: 10px 14px; color: #5B8C72; font-size: 0.86rem; font-weight: 600; margin-top: 8px;">
+                ✓ Automated Dispatch Approved: Confidence exceeds safety guardrails. Automatic routing active.
             </div>
             """, unsafe_allow_html=True)
             
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Section 4: Probability Analysis
-    st.markdown("### 📊 Calibrated Probability Distributions")
+    st.markdown("### Calibrated Probability Distributions")
     chart_col1, chart_col2 = st.columns(2)
     
-    # Plotly Theme Defaults
+    # Plotly Theme Defaults matching exact palette
     plot_layout = dict(
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="#ffffff",
-        margin=dict(l=10, r=30, t=35, b=20),
-        font=dict(family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=11, color="#334155"),
+        plot_bgcolor="#FFFFFF",
+        margin=dict(l=10, r=35, t=35, b=20),
+        font=dict(family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif", size=11, color="#5B6770"),
         xaxis=dict(
             range=[0, 1.05],
             tickformat=".0%",
-            gridcolor="#f1f5f9",
-            zerolinecolor="#cbd5e1"
+            gridcolor="#F2EFE9",
+            zerolinecolor="#E3E5E2",
+            tickfont=dict(size=10, color="#5B6770")
         ),
         yaxis=dict(
             autorange="reversed",
-            tickfont=dict(size=11, color="#0f172a")
+            tickfont=dict(size=11, color="#1F2933", weight=600)
         )
     )
     
@@ -462,8 +513,8 @@ if user_ticket.strip():
             y=cat_df["Category"],
             orientation="h",
             marker=dict(
-                color=["#0f766e" if c == cat_pred else "#94a3b8" for c in cat_df["Category"]],
-                line=dict(color="#0f172a", width=0.5)
+                color=["#087F7B" if c == cat_pred else "#C2E5E2" for c in cat_df["Category"]],
+                line=dict(color="#075E5B" if c == cat_pred else "#E3E5E2", width=1)
             ),
             text=[f"{p * 100:.1f}%" for p in cat_df["Probability"]],
             textposition="outside",
@@ -471,7 +522,7 @@ if user_ticket.strip():
         ))
         
         fig_cat.update_layout(
-            title=dict(text="<b>Category Posterior Probability</b>", font=dict(size=13, color="#0f172a")),
+            title=dict(text="<b>Category Posterior Probability</b>", font=dict(size=13, color="#1F2933")),
             height=280,
             **plot_layout
         )
@@ -481,11 +532,17 @@ if user_ticket.strip():
         prio_classes = prio_model.classes_ if hasattr(prio_model, "classes_") else pipeline_data["priority_labels"]
         prio_df = pd.DataFrame({"Priority": prio_classes, "Probability": prio_proba}).sort_values(by="Probability", ascending=False)
         
-        # Color mapping for priorities
+        # Color mapping for priorities matching exact palette
         prio_colors = {
-            "High": "#c2410c",
-            "Medium": "#d97706",
-            "Low": "#15803d"
+            "High": "#D95D39",
+            "Medium": "#D99A24",
+            "Low": "#5B8C72"
+        }
+        
+        prio_muted = {
+            "High": "#FBEAE5",
+            "Medium": "#FFF4D8",
+            "Low": "#EAF3ED"
         }
         
         fig_prio = go.Figure(go.Bar(
@@ -493,8 +550,8 @@ if user_ticket.strip():
             y=prio_df["Priority"],
             orientation="h",
             marker=dict(
-                color=[prio_colors.get(p, "#64748b") if p == prio_pred else "#cbd5e1" for p in prio_df["Priority"]],
-                line=dict(color="#0f172a", width=0.5)
+                color=[prio_colors.get(p, "#5B6770") if p == prio_pred else prio_muted.get(p, "#E3E5E2") for p in prio_df["Priority"]],
+                line=dict(color=[prio_colors.get(p, "#1F2933") for p in prio_df["Priority"]], width=1)
             ),
             text=[f"{p * 100:.1f}%" for p in prio_df["Probability"]],
             textposition="outside",
@@ -502,7 +559,7 @@ if user_ticket.strip():
         ))
         
         fig_prio.update_layout(
-            title=dict(text="<b>Priority Posterior Probability</b>", font=dict(size=13, color="#0f172a")),
+            title=dict(text="<b>Priority Posterior Probability</b>", font=dict(size=13, color="#1F2933")),
             height=280,
             **plot_layout
         )
@@ -513,8 +570,8 @@ else:
 
 # Section 5: Model Benchmark Comparisons
 st.markdown("---")
-st.markdown("### 🏆 Empirical Model Benchmarks & Generalization Evaluation")
-st.markdown("Candidate models were trained strictly on the 70% training set and benchmarked on the 15% validation partition. Champions were selected **strictly on Validation Macro F1** and evaluated once on the untouched 15% test set.")
+st.markdown("### Empirical Model Benchmarks & Generalization Evaluation")
+st.markdown("<div style='color: #5B6770; font-size: 0.90rem; margin-bottom: 12px;'>Candidate models were trained on the 70% training partition and benchmarked on the 15% validation partition. Champions were selected <strong>strictly on Validation Macro F1</strong> and evaluated once on the untouched 15% test partition.</div>", unsafe_allow_html=True)
 
 tab_cat, tab_prio, tab_test = st.tabs([
     "Head A: Category Benchmarks (Validation)",
@@ -528,8 +585,8 @@ with tab_cat:
         
         def highlight_cat_champion(row):
             if row["Model"] == cat_champion_name:
-                return ["background-color: #f0fdf4; font-weight: bold; color: #166534;"] * len(row)
-            return [""] * len(row)
+                return ["background-color: #E7F4F2; font-weight: bold; color: #075E5B;"] * len(row)
+            return ["color: #1F2933;"] * len(row)
             
         st.dataframe(
             df_cat_val.style.format({
@@ -542,7 +599,7 @@ with tab_cat:
             use_container_width=True,
             hide_index=True
         )
-        st.caption(f"★ Champion Model: **{cat_champion_name}** (Selected via Validation Macro F1)")
+        st.caption(f"Selected Champion Model: **{cat_champion_name}** (Selected via 15% Validation Macro F1)")
 
 with tab_prio:
     if os.path.exists(prio_val_metrics_path):
@@ -550,8 +607,8 @@ with tab_prio:
         
         def highlight_prio_champion(row):
             if row["Model"] == prio_champion_name:
-                return ["background-color: #f0fdf4; font-weight: bold; color: #166534;"] * len(row)
-            return [""] * len(row)
+                return ["background-color: #E7F4F2; font-weight: bold; color: #075E5B;"] * len(row)
+            return ["color: #1F2933;"] * len(row)
             
         st.dataframe(
             df_prio_val.style.format({
@@ -564,7 +621,7 @@ with tab_prio:
             use_container_width=True,
             hide_index=True
         )
-        st.caption(f"★ Champion Model: **{prio_champion_name}** (Selected via Validation Macro F1)")
+        st.caption(f"Selected Champion Model: **{prio_champion_name}** (Selected via 15% Validation Macro F1)")
 
 with tab_test:
     if os.path.exists(cat_test_metrics_path) and os.path.exists(prio_test_metrics_path):
@@ -591,17 +648,18 @@ with tab_test:
 # Section 6: Dataset Provenance & Production Scope
 st.markdown("---")
 st.markdown("""
-<div style="background-color: #ffffff; border: 1px solid #e5e1d8; border-radius: 8px; padding: 18px 22px; margin-top: 10px;">
-    <h4 style="color: #0f172a; margin-top: 0; font-size: 0.95rem; font-weight: 700;">
-        📌 Dataset Provenance & Production Scope Notice
+<div style="background-color: #FFFFFF; border: 1px solid #E3E5E2; border-radius: 8px; padding: 18px 22px; margin-top: 10px;">
+    <h4 style="color: #1F2933; margin-top: 0; font-size: 0.96rem; font-weight: 700;">
+        Dataset Provenance & Production Scope Notice
     </h4>
-    <p style="font-size: 0.86rem; color: #475569; line-height: 1.5; margin-bottom: 8px;">
-        <strong>Dataset Nature:</strong> Curated multi-domain enterprise support ticket corpus (3,500 records) designed for evaluating multi-head NLP triage routing architectures. 
+    <p style="font-size: 0.86rem; color: #5B6770; line-height: 1.5; margin-bottom: 8px;">
+        <strong style="color: #1F2933;">Dataset Nature:</strong> Curated multi-domain enterprise support ticket corpus (3,500 records) designed for evaluating multi-head NLP triage routing architectures. 
         Zero exact duplicates and zero cross-split leakage verified across all partitions.
     </p>
-    <p style="font-size: 0.86rem; color: #475569; line-height: 1.5; margin-bottom: 0;">
-        <strong>Production Validation Notice:</strong> Because this is a curated synthetic prototype dataset, these results should not be interpreted as representative of production performance. Real-world performance should be validated on an independently collected, noisy production ticket dataset containing typos, slang, mixed intents, and distribution shift.
+    <p style="font-size: 0.86rem; color: #5B6770; line-height: 1.5; margin-bottom: 0;">
+        <strong style="color: #1F2933;">Production Validation Notice:</strong> Because this is a curated synthetic prototype dataset, these results should not be interpreted as representative of production performance. Real-world performance should be validated on an independently collected, noisy production ticket dataset containing typos, slang, mixed intents, and distribution shift.
     </p>
 </div>
 """, unsafe_allow_html=True)
+
 
