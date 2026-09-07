@@ -523,8 +523,6 @@ st.sidebar.markdown(f"""
   `{cat_champion_name}`
 - **Priority Champion:**  
   `{prio_champion_name}`
-- **Probability Engine:**  
-  `Posterior / Logit Estimator`
 """)
 
 # Set Default Text Based on Selection
@@ -550,7 +548,7 @@ user_ticket = st.text_area(
 
 col_btn, col_stats = st.columns([1, 4])
 with col_btn:
-    submit_btn = st.button("Classify & Dispatch", type="primary", use_container_width=True)
+    submit_btn = st.button("Classify & Recommend Routing", type="primary", use_container_width=True)
 with col_stats:
     word_count = len(user_ticket.split()) if user_ticket else 0
     char_count = len(user_ticket) if user_ticket else 0
@@ -782,7 +780,7 @@ if user_ticket.strip():
         st.plotly_chart(fig_prio, use_container_width=True, config={"displayModeBar": False})
 
 else:
-    st.info("💡 Please enter a customer support ticket above or select a scenario from the sidebar, then click **Classify & Dispatch**.")
+    st.info("💡 Please enter a customer support ticket above or select a scenario from the sidebar, then click **Classify & Recommend Routing**.")
 
 # Section 05: Empirical Model Benchmarks & Generalization Evaluation
 st.markdown("""
