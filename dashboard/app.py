@@ -57,12 +57,19 @@ st.markdown("""
         background-color: #E5EAE3 !important;
         border-right: 1px solid #D5DDD6 !important;
     }
+
+    section[data-testid="stSidebar"] .block-container {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
     
     section[data-testid="stSidebar"] h1,
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3,
     section[data-testid="stSidebar"] h4 {
         color: #1F2933 !important;
+        margin-top: 0 !important;
+        margin-bottom: 8px !important;
     }
 
     section[data-testid="stSidebar"] p,
@@ -80,6 +87,7 @@ st.markdown("""
     section[data-testid="stSidebar"] label p {
         color: #1F2933 !important;
         font-weight: 600 !important;
+        margin-bottom: 4px !important;
     }
 
     section[data-testid="stSidebar"] code {
@@ -89,6 +97,21 @@ st.markdown("""
         padding: 2px 6px !important;
         border-radius: 4px !important;
         font-size: 0.82rem !important;
+    }
+
+    section[data-testid="stSidebar"] hr {
+        margin: 12px 0 !important;
+        border-color: #D5DDD6 !important;
+    }
+
+    section[data-testid="stSidebar"] ul {
+        padding-left: 1.15rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    section[data-testid="stSidebar"] li {
+        margin-bottom: 5px !important;
+        font-size: 0.88rem !important;
     }
 
     /* Structured Section Cards */
@@ -466,11 +489,11 @@ prio_champion_name = pipeline_data.get("priority_model_name", "Logistic Regressi
 
 # Sidebar Configuration (Simplified & Focused on Product Functionality)
 st.sidebar.markdown("""
-<div style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #D5DDD6;">
+<div style="padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #D5DDD6;">
     <div style="font-size: 1.15rem; font-weight: 800; color: #075E5B; letter-spacing: -0.02em;">
         SUPPORTSENSE
     </div>
-    <div style="font-size: 0.82rem; font-weight: 600; color: #53636A;">
+    <div style="font-size: 0.80rem; font-weight: 600; color: #53636A;">
         NLP Ticket Intelligence
     </div>
 </div>
@@ -503,15 +526,6 @@ st.sidebar.markdown(f"""
   `{prio_champion_name}`
 - **Calibration:**  
   `Platt Scaling`
-""")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("#### Data Quality")
-st.sidebar.markdown("""
-- **✓ Zero exact duplicates**
-- **✓ Zero normalized duplicates**
-- **✓ Zero cross-split leakage**
-- **✓ TF-IDF fitted on training data only**
 """)
 
 # Set Default Text Based on Selection
