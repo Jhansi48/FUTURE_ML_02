@@ -1,4 +1,4 @@
-﻿"""
+"""
 SupportSense NLP - Visualization & Diagnostic Plotting Module
 Generates confusion matrices, class balance charts, model benchmark comparisons,
 and feature importance charts.
@@ -22,14 +22,14 @@ def plot_class_distributions(df: pd.DataFrame, figures_dir: str):
     # Category Distribution
     cat_counts = df["Category"].value_counts().reset_index()
     cat_counts.columns = ["Category", "Count"]
-    sns.barplot(data=cat_counts, y="Category", x="Count", ax=axes[0], palette="Blues_r")
+    sns.barplot(data=cat_counts, y="Category", x="Count", hue="Category", ax=axes[0], palette="Blues_r", legend=False)
     axes[0].set_title("Ticket Volume Distribution by Category", fontsize=12, fontweight="bold")
     axes[0].set_xlabel("Number of Tickets")
     
     # Priority Distribution
     prio_counts = df["Priority"].value_counts().loc[["High", "Medium", "Low"]].reset_index()
     prio_counts.columns = ["Priority", "Count"]
-    sns.barplot(data=prio_counts, x="Priority", y="Count", ax=axes[1], palette=["#e41a1c", "#ff7f00", "#4daf4a"])
+    sns.barplot(data=prio_counts, x="Priority", y="Count", hue="Priority", ax=axes[1], palette=["#e41a1c", "#ff7f00", "#4daf4a"], legend=False)
     axes[1].set_title("Ticket Volume Distribution by Priority Level", fontsize=12, fontweight="bold")
     axes[1].set_ylabel("Number of Tickets")
     

@@ -1,0 +1,2 @@
+Champion Model,Accuracy,Macro Precision,Macro Recall,Macro F1,Weighted F1
+Multinomial Naive Bayes,1.0,1.0,1.0,1.0,1.0
