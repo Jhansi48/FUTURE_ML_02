@@ -34,7 +34,7 @@ Operating dual classification heads for **Category Classification** and **Priori
 
 ### Understanding the High Performance & Synthetic Benchmark Limitations
 1. **Semantic Distinctness**: The curated benchmark corpus has clear domain-specific vocabulary (e.g., Kubernetes, OOMKilled, VAT, SAML SSO, chargeback) with distinct linguistic boundaries between categories.
-2. **Real-World Behavior Discussion**: In production environments with noisy real-world customer support data (containing typos, slang, ambiguous multi-intent phrasing, cross-topic requests, and non-standard shorthand), performance would naturally moderate to ~85–92% Macro F1.
+2. **Production Validation Notice**: Because this is a curated synthetic prototype dataset, these results should not be interpreted as representative of production performance. Real-world performance should be validated on an independently collected, noisy production ticket dataset containing typos, slang, mixed intents, and distribution shift.
 3. **Prevention of False Reporting**: Metrics reported here reflect genuine empirical measurements on this curated prototype corpus without data fabrication or artificial score manipulation.
 
 ---

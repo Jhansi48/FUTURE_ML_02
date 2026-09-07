@@ -75,7 +75,7 @@ In modern customer success and enterprise IT operations, manual ticket triage in
 
 ### 2. Understanding Benchmark Performance & Real-World Expectations
 - **Why Metric Scores Are High**: The curated prototype dataset features clean semantic vocabulary boundaries for specific operational domains (e.g. *Kubernetes, OOMKilled, PostgreSQL pool* vs. *VAT invoice, chargeback, Stripe* vs. *SAML SSO, password reset*), allowing linear classifiers to achieve near-perfect separability in TF-IDF space.
-- **Real-World Domain Behavior**: In production settings where customer tickets contain grammatical errors, slang, multi-intent blended requests, and ambiguous phrasing, macro F1 will naturally normalize to ~85%–92%.
+- **Production Validation Notice**: Because this is a curated synthetic prototype dataset, these results should not be interpreted as representative of production performance. Real-world performance should be validated on an independently collected, noisy production ticket dataset containing typos, slang, mixed intents, and distribution shift.
 - **Zero Fabrication Guarantee**: All reported scores are authentic empirical evaluations on this benchmark corpus without data fabrication or artificial score manipulation.
 
 ---
